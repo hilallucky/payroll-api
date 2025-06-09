@@ -1,0 +1,43 @@
+{
+    "name": "payroll-api",
+    "version": "1.0.0",
+    "main": "app.js",
+    "scripts": {
+        "test": "jest",
+        "test:watch": "jest --watchAll",
+        "test:coverage": "jest --coverage",
+        "create-db": "sequelize db:create",
+        "migrate": "sequelize db:migrate",
+        "seed:data": "sequelize db:seed --seed 20250607043037-create-admin-employees.js",
+        "seed:all": "sequelize db:seed:all",
+        "start": "node ./src/app.js",
+        "dev": "nodemon ./src/app.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "@joi/date": "^2.1.1",
+        "axios": "^1.9.0",
+        "bcrypt": "^6.0.0",
+        "dotenv": "^16.5.0",
+        "express": "^5.1.0",
+        "faker": "^5.5.3",
+        "joi": "^17.13.3",
+        "jsonwebtoken": "^9.0.2",
+        "moment": "^2.30.1",
+        "morgan": "^1.10.0",
+        "nodemon": "^3.1.10",
+        "pg": "^8.16.0",
+        "pg-hstore": "^2.3.4",
+        "sequelize": "^6.37.7",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.1"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0",
+        "sequelize-cli": "^6.6.3",
+        "supertest": "^7.1.1"
+    }
+}

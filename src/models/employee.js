@@ -1,0 +1,95 @@
+"use strict";
+
+const { Model } = require("sequelize");
+const sequelize = require("../config/database");
+
+module.exports = (sequelize, DataTypes) => {
+    class Employee extends Model {
+        /**
+         * Helper method for defining associations.
+         * This method is not a part of Sequelize lifecycle.
+         * The `models/index` file will call this method automatically.
+         */
+        static associate(models) {
+            Employee.hasMany(models.Attendance, { foreignKey: "employeeId" });
+            Employee.hasMany(models.Attendance, {
+                foreignKey: "userId",
+            });
+            Employee.hasMany(models.AttendanceLog, {
+                foreignKey: "employeeId",
+            });
+            Employee.hasMany(models.AttendanceLog, {
+                foreignKey: "userId",
+            });
+        }
+    }
+    Employee.init(
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true,
+                allowNull: false,
+            },
+            username: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true,
+            },
+            password: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            fullName: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            email: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true,
+                validate: {
+                    isEmail: true,
+                },
+            },
+            checkInSchedule: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: "09:00:00",
+            },
+            checkOutSchedule: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: "17:00:00",
+            },
+            maxOverTimePerDay: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue: 3,
+            },
+            monthlySalary: {
+                type: DataTypes.DECIMAL(10, 2),
+                allowNull: false,
+                defaultValue: 0,
+            },
+            salaryPerHour: {
+                type: DataTypes.DECIMAL(10, 2),
+                allowNull: false,
+                defaultValue: 0,
+            },
+            isAdmin: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            },
+            createdBy: DataTypes.INTEGER,
+            updatedBy: DataTypes.INTEGER,
+            ipAddress: DataTypes.STRING,
+        },
+        {
+            sequelize,
+            modelName: "Employee",
+        }
+    );
+    return Employee;
+};
