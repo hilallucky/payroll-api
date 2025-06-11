@@ -5,6 +5,58 @@ const jwt = require("jsonwebtoken");
 const { Employee } = require("../../models");
 const { successResponse, errorResponse } = require("../../utils/baseResponse");
 
+/**
+ * @swagger
+ * /public/login:
+ *   post:
+ *     summary: Admin login
+ *     description: Authenticate admin user and return JWT token.
+ *     tags:
+ *       - Auth
+ *     security: []  # <-- This disables bearer token for this route
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: admin123
+ *               password:
+ *                 type: string
+ *                 example: secretpassword
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     userName:
+ *                       type: string
+ *                     fullName:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     token:
+ *                       type: string
+ *       401:
+ *         description: Invalid password/username or access denied
+ *       500:
+ *         description: Server error
+ */
+
 router.post("/login", async (req, res) => {
     const { username, password } = req.body;
 

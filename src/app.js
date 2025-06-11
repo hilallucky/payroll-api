@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 process.env.TZ = "Asia/Jakarta";
 
 const date = new Date();
@@ -47,6 +48,8 @@ app.use(requestIdMiddleware);
 app.use(performanceLogger);
 app.use(auditInfo);
 
+require("../swagger")(app);
+
 app.use("/api/v1.0", router);
 
 router.get("/", (req, res) => {
@@ -75,6 +78,9 @@ app.use("/api/v1.0/private/payslip", authenticateToken, payslipRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
+    console.log(
+        `Payroll API docs available at http://localhost:${port}/api-docs`
+    );
 });
 
 module.exports = app;
