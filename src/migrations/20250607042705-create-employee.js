@@ -1,4 +1,7 @@
 "use strict";
+
+const { employeeStatus } = require("../constants/contsant");
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
@@ -60,19 +63,26 @@ module.exports = {
                 allowNull: false,
                 defaultValue: false,
             },
-            createdBy: {
-                type: Sequelize.INTEGER,
+            status: {
+                type: Sequelize.STRING,
+                defaultValue: employeeStatus.ACTIVE,
             },
-            updatedBy: {
-                type: Sequelize.INTEGER,
+            userId: {
+                type: Sequelize.STRING,
             },
             ipAddress: {
                 type: Sequelize.STRING,
+            },
+            createdBy: {
+                type: Sequelize.INTEGER,
             },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,
                 defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+            },
+            updatedBy: {
+                type: Sequelize.INTEGER,
             },
             updatedAt: {
                 allowNull: false,

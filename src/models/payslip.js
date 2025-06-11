@@ -1,5 +1,6 @@
 "use strict";
 const { Model } = require("sequelize");
+const { payslipStatus } = require("../constants/contsant");
 module.exports = (sequelize, DataTypes) => {
     class Payslip extends Model {
         /**
@@ -9,6 +10,14 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            Payslip.belongsTo(models.Employee, {
+                foreignKey: "employeeId",
+                as: "employee",
+            });
+            Payslip.belongsTo(models.Payroll, {
+                foreignKey: "payrollId",
+                as: "payroll",
+            });
         }
     }
     Payslip.init(
@@ -40,6 +49,10 @@ module.exports = (sequelize, DataTypes) => {
             totalReimbursements: { type: DataTypes.DECIMAL, defaultValue: 0 },
             totalPay: { type: DataTypes.DECIMAL, defaultValue: 0 },
             notes: DataTypes.TEXT,
+            status: {
+                type: DataTypes.STRING,
+                defaultValue: payslipStatus.PAYSLIPED,
+            },
             userId: DataTypes.STRING,
             ipAddress: DataTypes.STRING,
             createdAt: DataTypes.DATE,

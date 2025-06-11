@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             Attendance.belongsTo(models.Employee, {
                 foreignKey: "employeeId",
+                as: "employee",
             });
             Attendance.belongsTo(models.Employee, {
                 foreignKey: "userId",
@@ -50,17 +51,24 @@ module.exports = (sequelize, DataTypes) => {
             },
             checkIn: {
                 type: DataTypes.DATE,
-                allowNull: false,
                 defaultValue: DataTypes.NOW,
             },
             checkOut: {
                 type: DataTypes.DATE,
+            },
+            workHours: {
+                type: DataTypes.STRING(10),
+                defaultValue: "00:00:00",
             },
             overTimeIn: {
                 type: DataTypes.DATE,
             },
             overTimeOut: {
                 type: DataTypes.DATE,
+            },
+            overtimeHours: {
+                type: DataTypes.STRING(10),
+                defaultValue: "00:00:00",
             },
             userId: DataTypes.INTEGER,
             ipAddress: DataTypes.STRING,

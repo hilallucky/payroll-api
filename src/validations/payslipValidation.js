@@ -2,24 +2,25 @@ const Joi = require("joi").extend(require("@joi/date"));
 const { payslipStatus } = require("../constants/contsant");
 const validPayslipStatus = Object.values(payslipStatus);
 
-const createPayslipSchemaValidation = Joi.object({
-    startDate: Joi.date()
-        .format("YYYY-MM-DD")
-        .required()
-        .utc()
-        .label("startDate"),
-    endDate: Joi.date()
-        .format("YYYY-MM-DD")
-        .required()
-        .utc()
-        .min(Joi.ref("startDate"))
-        .required(),
-    status: Joi.string()
-        .optional()
-        .label("status")
-        .valid(...validPayslipStatus),
+const createPayslipByIdSchemaValidation = Joi.object({
+    employeeId: Joi.number().required().label("employeeId"),
+    monthPeriod: Joi.number().optional().label("monthPeriod").min(1).max(12),
+    yearPeriod: Joi.number().optional().label("yearPeriod").min(1),
+});
+
+const createAllPayslipSchemaValidation = Joi.object({
+    monthPeriod: Joi.number().optional().label("monthPeriod").min(1).max(12),
+    yearPeriod: Joi.number().optional().label("yearPeriod").min(1),
+});
+
+const createSummPayslipSchemaValidation = Joi.object({
+    employeeId: Joi.number().optional().label("employeeId"),
+    monthPeriod: Joi.number().optional().label("monthPeriod").min(1).max(12),
+    yearPeriod: Joi.number().optional().label("yearPeriod").min(1),
 });
 
 module.exports = {
-    createPayslipSchemaValidation,
+    createPayslipByIdSchemaValidation,
+    createAllPayslipSchemaValidation,
+    createSummPayslipSchemaValidation,
 };

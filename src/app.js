@@ -71,7 +71,7 @@ app.use(
     reimbursementRoutes
 );
 app.use("/api/v1.0/private/payroll", authenticateToken, payrollRoutes);
-// app.use("/api/v1.0/private/payslip", authenticateToken, payslipRoutes);
+app.use("/api/v1.0/private/payslip", authenticateToken, payslipRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

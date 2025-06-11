@@ -37,12 +37,23 @@ createAttendance = async (req, res) => {
             attendancePeriods
         );
     } catch (err) {
-        return errorResponse(
-            res,
-            "Server Error",
-            err.message,
-            statusCodes.SERVER_ISSUE
-        );
+        let message = "Employee not found"
+                ? "Employee not found"
+                : "Server Error",
+            errCode = statusCodes.SERVER_ISSUE;
+        if ((err.message = "Employee not found")) {
+            message = "Employee not found";
+            errCode = statusCodes.BAD_REQUEST;
+        }
+        if (
+            (err.message =
+                "Not allowed to attend for overtime, because you not porpose overtime for this time.")
+        ) {
+            message = "Propose you overtime first!";
+            errCode = statusCodes.BAD_REQUEST;
+        }
+
+        return errorResponse(res, message, err.message, errCode);
     }
 };
 

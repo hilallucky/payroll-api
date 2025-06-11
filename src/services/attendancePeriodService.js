@@ -8,7 +8,7 @@ createAttendancePeriod = async (
     userId,
     ipAddress
 ) => {
-    const overlappingPeriods = await chekOverlappingDates(startDate, endDate);
+    const overlappingPeriods = await chekOverlapping(startDate, endDate);
     if (overlappingPeriods.length > 0) {
         throw new Error("Overlapping periods found");
     }
@@ -26,7 +26,7 @@ createAttendancePeriod = async (
     return newPeriod;
 };
 
-chekOverlappingDates = async (startDate, endDate) => {
+chekOverlapping = async (startDate, endDate) => {
     const checkPeriods = await AttendancePeriod.findAll({
         attibutes: [
             "periodId",
@@ -87,7 +87,7 @@ getAllAttendancePeriodsById = async (id) => {
 
 module.exports = {
     createAttendancePeriod,
-    chekOverlappingDates,
+    chekOverlapping,
     getAllAttendancePeriods,
     getAllAttendancePeriodsById,
 };

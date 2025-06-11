@@ -7,7 +7,9 @@ const createAttendanceSchemaValidation = Joi.object({
     payrollId: Joi.number().optional().label("payrollId"),
     attendanceDate: Joi.date()
         .format("YYYY-MM-DD HH:mm:ss")
-        .required()
+        .optional()
+        .utc()
+        .default(new Date().toISOString().slice(0, 19))
         .label("attendanceDate"),
     attendanceType: Joi.string()
         .required()

@@ -1,6 +1,7 @@
 const moment = require("moment");
 const { Op, Sequelize } = require("sequelize");
 const { Overtime, Employee } = require("../models");
+const { errorResponse } = require("../utils/baseResponse");
 
 createOvertime = async (
     employeeId,
@@ -22,12 +23,7 @@ createOvertime = async (
         moment(date, "HHmmss").format("HH:mm:ss");
 
     if (chekWorkHour && !proposeTimeAvaliable) {
-        return errorResponse(
-            res,
-            "Not allowed to propose overtime this time.",
-            "Overtime hours exceed work hours. Try again in few hours.",
-            statusCodes.BAD_REQUEST
-        );
+        throw new Error("Not allowed to propose overtime this time.");
     }
 
     const newOvertime = await Overtime.create({

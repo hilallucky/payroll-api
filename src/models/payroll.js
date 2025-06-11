@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            Payroll.belongsTo(models.PayrollPeriod, {
+                foreignKey: "payrollPeriodId",
+                as: "payrollPeriod",
+            });
             Payroll.hasMany(models.Attendance, {
                 foreignKey: "payrollId",
                 as: "attendance",
@@ -21,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
             Payroll.hasMany(models.Reimbursement, {
                 foreignKey: "payrollId",
                 as: "reimbursement",
+            });
+            Payroll.belongsTo(models.Employee, {
+                foreignKey: "employeeId",
+                as: "employee",
             });
         }
     }
@@ -34,13 +42,16 @@ module.exports = (sequelize, DataTypes) => {
                     key: "id",
                 },
             },
+            payrollPeriodId: { type: DataTypes.INTEGER },
             startDate: DataTypes.DATEONLY,
             endDate: DataTypes.DATEONLY,
             baseSalary: { type: DataTypes.DECIMAL, defaultValue: 0 },
             proratedSalary: { type: DataTypes.DECIMAL, defaultValue: 0 },
             attendances: { type: DataTypes.INTEGER, defaultValue: 0 },
             workingDays: { type: DataTypes.INTEGER, defaultValue: 0 },
-            overtimeHours: { type: DataTypes.DECIMAL, defaultValue: 0 },
+            workingHours: { type: DataTypes.STRING, defaultValue: "00:00:00" },
+            overtimeDays: { type: DataTypes.INTEGER, defaultValue: 0 },
+            overtimeHours: { type: DataTypes.STRING, defaultValue: "00:00:00" },
             overtimePay: { type: DataTypes.DECIMAL, defaultValue: 0 },
             totalReimbursements: { type: DataTypes.DECIMAL, defaultValue: 0 },
             totalPay: { type: DataTypes.DECIMAL, defaultValue: 0 },

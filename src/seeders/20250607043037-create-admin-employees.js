@@ -2,6 +2,7 @@
 
 const bcrypt = require("bcrypt");
 const faker = require("faker");
+const { employeeStatus } = require("../constants/contsant");
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -41,6 +42,7 @@ module.exports = {
                 monthlySalary: faker.datatype.number({ min: 3000, max: 12000 }),
                 salaryPerHour: faker.datatype.number({ min: 75, max: 100 }),
                 isAdmin: false,
+                status: employeeStatus.ACTIVE,
                 createdAt: now,
                 updatedAt: now,
                 createdBy: adminId.id,

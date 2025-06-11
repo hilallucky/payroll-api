@@ -2,68 +2,95 @@ const { statusCodes } = require("../constants/contsant");
 const payslipService = require("../services/payslipService");
 const { successResponse, errorResponse } = require("../utils/baseResponse");
 
-createPayslip = async (req, res) => {
-    const { startDate, endDate } = req.body;
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+generatePayslipById = async (req, res) => {
+    const { employeeId, monthPeriod, yearPeriod } = req.query;
 
     try {
-        const payslip = await payslipService.createPayslip(
-            start,
-            end,
-            req.user.id,
-            req.ip,
-            req,
-            res
-        );
+        const payslip = await payslipService.getAllPayslipsById(req.query);
 
         return successResponse(
             res,
-            "Payslip period created successfully",
+            "Payslip generated successfully",
             payslip,
-            statusCodes.CREATED
+            statusCodes.SUCCESS
         );
     } catch (err) {
-        let message = "Server Error",
-            errCode = statusCodes.SERVER_ISSUE;
-        if ((err.message = "Overlapping periods found")) {
-            message = "Overlapping periods";
-            errCode = statusCodes.BAD_REQUEST;
-        }
-        return errorResponse(res, message, err.message, errCode);
+        return errorResponse(
+            res,
+            err.message,
+            err.message,
+            statusCodes.BAD_REQUEST
+        );
     }
 };
 
-getAllPayslips = async (req, res) => {
-    const startDate = req.query?.startDate;
-    const endDate = req.query?.endDate;
+generateAllPayslips = async (req, res) => {
+    const { employeeId, monthPeriod, yearPeriod } = req.query;
 
     try {
-        const payslips = await payslipService.getAllPayslips(
-            startDate,
-            endDate
+        const payslip = await payslipService.getAllPayslipsById(req.query);
+
+        return successResponse(
+            res,
+            "Payslip generated successfully",
+            payslip,
+            statusCodes.SUCCESS
         );
-        return successResponse(res, "Payslip retrieved successfully", payslips);
     } catch (err) {
-        return errorResponse(res, "Failed to retrieve payslip", err);
+        return errorResponse(
+            res,
+            err.message,
+            err.message,
+            statusCodes.BAD_REQUEST
+        );
     }
 };
 
-getAllPayslipsById = async (req, res) => {
-    const { id } = req.params;
-
+generateSummaryPayslip = async (req, res) => {
     try {
-        const payslips = await payslipService.getAllPayslipsById(id);
+        const payslip = await payslipService.generateSummaryPayslip(req.query);
 
-        return successResponse(res, "Payslip retrieved successfully", payslips);
+        return successResponse(
+            res,
+            "Payslip summary generated successfully",
+            payslip,
+            statusCodes.SUCCESS
+        );
     } catch (err) {
-        return errorResponse(res, "Failed to retrieve payslip", err.message);
+        console.log(err);
+
+        return errorResponse(
+            res,
+            err.message,
+            err.message,
+            statusCodes.BAD_REQUEST
+        );
+    }
+};
+
+getAllPayrollPeriod = async (req, res) => {
+    try {
+        const payslip = await payslipService.getAllPayrollPeriod(req.query);
+
+        return successResponse(
+            res,
+            "List all payroll periods",
+            payslip,
+            statusCodes.SUCCESS
+        );
+    } catch (err) {
+        return errorResponse(
+            res,
+            err.message,
+            err.message,
+            statusCodes.BAD_REQUEST
+        );
     }
 };
 
 module.exports = {
-    createPayslip,
-    getAllPayslips,
-    getAllPayslipsById,
+    generatePayslipById,
+    generateAllPayslips,
+    generateSummaryPayslip,
+    getAllPayrollPeriod,
 };

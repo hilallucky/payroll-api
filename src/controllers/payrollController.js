@@ -1,15 +1,18 @@
 const { statusCodes } = require("../constants/contsant");
-const payrollService = require("../services/payrollService");
+const payrollService = require("../services/payrollPeriodService");
+// const payrollService = require("../services/payrollService");
 const { successResponse, errorResponse } = require("../utils/baseResponse");
 
 createPayroll = async (req, res) => {
-    const { startDate, endDate } = req.body;
+    const { monthPeriod, yearPeriod, startDate, endDate } = req.body;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
 
     try {
         const payroll = await payrollService.createPayroll(
+            monthPeriod,
+            yearPeriod,
             start,
             end,
             req.user.id,
@@ -25,9 +28,9 @@ createPayroll = async (req, res) => {
             statusCodes.CREATED
         );
     } catch (err) {
-        let message = "Server Error",
-            errCode = statusCodes.SERVER_ISSUE;
-        if ((err.message = "Overlapping periods found")) {
+        let message = err.message || "Server Error",
+            errCode = err.statusCodes || statusCodes.BAD_REQUEST;
+        if (err.message === "Overlapping periods found") {
             message = "Overlapping periods";
             errCode = statusCodes.BAD_REQUEST;
         }

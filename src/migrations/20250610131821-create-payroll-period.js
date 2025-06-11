@@ -1,72 +1,65 @@
 "use strict";
 
 const { payrollStatus } = require("../constants/contsant");
-const { sequelize } = require("../models");
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable("Payrolls", {
+        await queryInterface.createTable("PayrollPeriods", {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER,
             },
-            employeeId: {
+            monthPeriod: {
                 type: Sequelize.INTEGER,
             },
-            payrollPeriodId: {
+            yearPeriod: {
                 type: Sequelize.INTEGER,
             },
-            baseSalary: {
-                type: Sequelize.DECIMAL,
-                defaultValue: 0,
+            startDate: {
+                type: Sequelize.DATEONLY,
             },
-            startDate: { type: Sequelize.DATEONLY },
-            endDate: { type: Sequelize.DATEONLY },
-            proratedSalary: {
-                type: Sequelize.DECIMAL,
-                defaultValue: 0,
+            endDate: {
+                type: Sequelize.DATEONLY,
             },
-            attendances: {
+            totalActiveEmployee: {
                 type: Sequelize.INTEGER,
                 defaultValue: 0,
             },
-            workingDays: {
+            totalWorkEmployee: {
                 type: Sequelize.INTEGER,
                 defaultValue: 0,
             },
-            workingHours: {
+            totalWorkHour: {
                 type: Sequelize.STRING,
                 defaultValue: "00:00:00",
             },
-            overtimeDays: {
+            totalOvertimeEmployee: {
                 type: Sequelize.INTEGER,
                 defaultValue: 0,
             },
-            overtimeHours: {
+            totalOvertime: {
                 type: Sequelize.STRING,
                 defaultValue: "00:00:00",
             },
-            overtimePay: {
-                type: Sequelize.DECIMAL,
-                defaultValue: 0,
+            totalReimbursement: {
+                type: Sequelize.INTEGER,
             },
-            totalReimbursements: {
-                type: Sequelize.DECIMAL,
+            totalReimbursementEmployee: {
+                type: Sequelize.INTEGER,
                 defaultValue: 0,
-            },
-            totalPay: {
-                type: Sequelize.DECIMAL,
-                defaultValue: 0,
-            },
-            notes: {
-                type: Sequelize.TEXT,
             },
             status: {
                 type: Sequelize.STRING,
                 defaultValue: payrollStatus.PAYROLLED,
+            },
+            processedBy: {
+                type: Sequelize.INTEGER,
+            },
+            processedAt: {
+                type: Sequelize.DATE,
             },
             userId: {
                 type: Sequelize.STRING,
@@ -77,14 +70,14 @@ module.exports = {
             createdAt: {
                 type: Sequelize.DATE,
             },
+            createdBy: {
+                type: Sequelize.STRING,
+            },
             updatedAt: {
                 type: Sequelize.DATE,
             },
-            createdBy: {
-                type: Sequelize.INTEGER,
-            },
             updatedBy: {
-                type: Sequelize.INTEGER,
+                type: Sequelize.STRING,
             },
             createdAt: {
                 allowNull: false,
@@ -97,6 +90,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable("Payrolls");
+        await queryInterface.dropTable("PayrollPeriods");
     },
 };

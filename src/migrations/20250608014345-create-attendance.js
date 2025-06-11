@@ -21,17 +21,24 @@ module.exports = {
             },
             checkIn: {
                 type: Sequelize.DATE,
-                allowNull: false,
                 defaultValue: Sequelize.NOW,
             },
             checkOut: {
                 type: Sequelize.DATE,
+            },
+            workHours: {
+                type: Sequelize.STRING(10),
+                defaultValue: "00:00:00",
             },
             overTimeIn: {
                 type: Sequelize.DATE,
             },
             overTimeOut: {
                 type: Sequelize.DATE,
+            },
+            overtimeHours: {
+                type: Sequelize.STRING(10),
+                defaultValue: "00:00:00",
             },
             userId: Sequelize.INTEGER,
             ipAddress: Sequelize.STRING,

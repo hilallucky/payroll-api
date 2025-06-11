@@ -53,9 +53,15 @@ createOvertime = async (req, res) => {
     } catch (err) {
         return errorResponse(
             res,
-            "Server Error",
-            err.message,
-            statusCodes.SERVER_ISSUE
+            err.message == "Not allowed to propose overtime this time."
+                ? err.message
+                : "Server Error",
+            err.message == "Not allowed to propose overtime this time."
+                ? "Overtime hours exceed work hours. Try again in few hours."
+                : err.message,
+            err.message == "Not allowed to propose overtime this time."
+                ? statusCodes.BAD_REQUEST
+                : statusCodes.SERVER_ISSUE
         );
     }
 };

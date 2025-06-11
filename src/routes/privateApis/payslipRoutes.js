@@ -3,17 +3,13 @@ const router = express.Router();
 const payslipsController = require("../../controllers/payslipController");
 const { validateRequest } = require("../../middlewares/validationRequest");
 const {
-    createPayslipSchemaValidation,
+    createPayslipByIdSchemaValidation,
+    createAllPayslipSchemaValidation,
+    createSummPayslipSchemaValidation,
 } = require("../../validations/payslipValidation");
 
-router.post(
-    "/",
-    validateRequest({
-        body: createPayslipSchemaValidation,
-    }),
-    payslipsController.createPayslip
-);
-router.get("/", payslipsController.getAllPayslips);
-router.get("/:id", payslipsController.getAllPayslipsById);
+router.get("/", payslipsController.generatePayslipById);
+router.get("/all", payslipsController.generateSummaryPayslip);
+router.get("/period", payslipsController.getAllPayrollPeriod);
 
 module.exports = router;

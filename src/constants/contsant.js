@@ -38,10 +38,18 @@ const payslipStatus = {
     REJECTED: "REJECTED",
 };
 
+const employeeStatus = {
+    ACTIVE: "ACTIVE",
+    INACTIVE: "INACTIVE",
+    RESIGN: "RESIGN",
+    TERMINATED: "TERMINATED",
+};
+
 module.exports = {
     statusCodes,
     attendanceType,
     approvalStatus,
     payrollStatus,
     payslipStatus,
+    employeeStatus,
 };

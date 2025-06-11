@@ -1,285 +1,147 @@
-const { Op, Sequelize, Error } = require("sequelize");
+const { Op, Sequelize, Error, where } = require("sequelize");
 
-const {
-    Payslip,
-    AttendancePeriod,
-    AttendanceLog,
-    Attendance,
-    Overtime,
-    Reimbursement,
-    sequelize,
-} = require("../models");
+const { Employee, PayrollPeriod, Payroll, sequelize } = require("../models");
 const { statusCodes } = require("../constants/contsant");
 
-createPayslip = async (startDate, endDate, userId, ipAddress, req, res) => {
-    const transaction = await sequelize.transaction();
+getAllPayslipsById = async (data) => {
     try {
-        const overlappings = await chekOverlappingDates(
-            userId,
-            startDate,
-            endDate,
-            transaction
-        );
-
-        const dataOverlap = JSON.parse(JSON.stringify(overlappings));
-        if (dataOverlap.length > 0) {
-            throw new Error("Overlapping periods found");
-        }
-
-        const newPayslip = await Payslip.create(
-            {
-                employeeId: userId,
-                startDate,
-                endDate,
-                baseSalary,
-                proratedSalary,
-                attendances,
-                workingDays,
-                overtimeHours,
-                overtimePay,
-                totalReimbursements,
-                totalPay,
-                createdBy: userId,
-                updatedBy: userId,
-                ipAddress: ipAddress,
+        const result = await Payroll.findAll({
+            attributes: [
+                "employeeId",
+                "startDate",
+                "endDate",
+                "baseSalary",
+                "workingDays",
+                "workingHours",
+                "proratedSalary",
+                "overtimeHours",
+                "overtimePay",
+                "totalReimbursements",
+                "totalPay",
+            ],
+            where: {
+                employeeId: data.employeeId,
             },
-            { transaction, returning: ["id"] }
-        );
-
-        const getAttendaces = await Attendance.update(
-            {
-                payslipId: newPayslip.id,
-                updatedBy: userId,
-                updatedAt: new Date(),
-                ipAddress,
-            },
-            {
-                where: {
-                    [Op.and]: [
-                        Sequelize.where(
-                            Sequelize.fn("DATE", Sequelize.col("checkIn")),
-                            {
-                                [Op.between]: [
-                                    new Date(startDate)
-                                        .toISOString()
-                                        .slice(0, 10),
-                                    new Date(endDate)
-                                        .toISOString()
-                                        .slice(0, 10),
-                                ],
-                            }
-                        ),
-                        { payslipId: null },
-                    ],
+            include: [
+                {
+                    model: PayrollPeriod,
+                    as: "payrollPeriod",
+                    attributes: ["monthPeriod", "yearPeriod"],
+                    where:
+                        data.monthPeriod && data.yearPeriod
+                            ? {
+                                  monthPeriod: data.monthPeriod,
+                                  yearPeriod: data.yearPeriod,
+                              }
+                            : {},
+                    required: true,
                 },
-            },
-            { transaction, returning: true }
-        );
 
-        const getAttendaceLogs = await AttendanceLog.update(
-            {
-                payslipId: newPayslip.id,
-                updatedBy: userId,
-                updatedAt: new Date(),
-                ipAddress,
-            },
-            {
-                where: {
-                    [Op.and]: [
-                        Sequelize.where(
-                            Sequelize.fn(
-                                "DATE",
-                                Sequelize.col("attendanceDate")
-                            ),
-                            {
-                                [Op.between]: [
-                                    new Date(startDate)
-                                        .toISOString()
-                                        .slice(0, 10),
-                                    new Date(endDate)
-                                        .toISOString()
-                                        .slice(0, 10),
-                                ],
-                            }
-                        ),
-                        { payslipId: null },
-                    ],
+                {
+                    model: Employee,
+                    as: "employee",
+                    attributes: ["fullName", "email", "status"],
                 },
-            },
-            { transaction, returning: true }
-        );
+            ],
+        });
 
-        const getAttendacesPeriod = await AttendancePeriod.update(
-            {
-                payslipId: newPayslip.id,
-                updatedBy: userId,
-                updatedAt: new Date(),
-                userId,
-                ipAddress,
-            },
-            {
-                where: {
-                    [Op.and]: [
-                        Sequelize.where(
-                            Sequelize.fn("DATE", Sequelize.col("startDate")),
-                            {
-                                [Op.between]: [
-                                    new Date(startDate)
-                                        .toISOString()
-                                        .slice(0, 10),
-                                    new Date(endDate)
-                                        .toISOString()
-                                        .slice(0, 10),
-                                ],
-                            }
-                        ),
-                        { payslipId: null },
-                    ],
-                },
-            },
-            { transaction, returning: true }
-        );
-
-        const getOvertimes = await Overtime.update(
-            {
-                payslipId: newPayslip.id,
-                updatedBy: userId,
-                updatedAt: new Date(),
-                userId,
-            },
-            {
-                where: {
-                    [Op.or]: [
-                        Sequelize.where(
-                            Sequelize.fn("DATE", Sequelize.col("startDate")),
-                            {
-                                [Op.between]: [
-                                    new Date(startDate)
-                                        .toISOString()
-                                        .slice(0, 10),
-                                    new Date(endDate)
-                                        .toISOString()
-                                        .slice(0, 10),
-                                ],
-                            }
-                        ),
-                        Sequelize.where(
-                            Sequelize.fn("DATE", Sequelize.col("endDate")),
-                            {
-                                [Op.between]: [
-                                    new Date(startDate)
-                                        .toISOString()
-                                        .slice(0, 10),
-                                    new Date(endDate)
-                                        .toISOString()
-                                        .slice(0, 10),
-                                ],
-                            }
-                        ),
-                        { payslipId: null },
-                    ],
-                },
-            },
-            { transaction, returning: true }
-        );
-
-        const getReimbursements = await Reimbursement.update(
-            {
-                payslipId: newPayslip.id,
-                updatedBy: userId,
-                updatedAt: new Date(),
-                userId,
-            },
-            {
-                where: {
-                    [Op.and]: [
-                        Sequelize.where(
-                            Sequelize.fn("DATE", Sequelize.col("date")),
-                            {
-                                [Op.between]: [
-                                    new Date(startDate)
-                                        .toISOString()
-                                        .slice(0, 10),
-                                    new Date(endDate)
-                                        .toISOString()
-                                        .slice(0, 10),
-                                ],
-                            }
-                        ),
-                        { payslipId: null },
-                    ],
-                },
-            },
-            { transaction, returning: true }
-        );
-
-        await transaction.commit();
-        return {
-            newPayslip,
-            attendaces: getAttendaces[0],
-            attendaceLogs: getAttendaceLogs[0],
-            atendacePeriods: getAttendacePeriods[0],
-            overtimes: getOvertimes[0],
-            reimbursements: getReimbursements[0],
-        };
+        return result;
     } catch (err) {
-        if (transaction) {
-            await transaction.rollback();
-        }
-        if (
-            err.message ===
-            "Overlapping periods found for the requested date range."
-        ) {
-            throw new Error("Overlapping periods found");
-        }
-        if ((err = "Overlapping periods found")) {
-            throw new Error("Overlappingw periods found");
-        }
         throw new Error(err.message);
     }
 };
 
-getDataFromPayroll = async (payrollId) => {
-    const data = await Payroll.findOne({ where: { id: payrollId } });
+getAllPayslips = async (data) => {
+    try {
+        const result = await Payroll.findAll({
+            attributes: [
+                "employeeId",
+                "monthPeriod",
+                "yearPeriod",
+                "startDate",
+                "endDate",
+                "baseSalary",
+                "workingDays",
+                "workingHours",
+                "proratedSalary",
+                "overtimeHours",
+                "overtimePay",
+                "totalReimbursements",
+                "totalPay",
+            ],
+            condition,
+            include: {
+                model: Employee,
+                as: "employee",
+                attributes: ["fullName", "email", "status"],
+            },
+        });
+
+        return result;
+    } catch (err) {
+        throw new Error(err.message);
+    }
+};
+
+generateSummaryPayslip = async (data) => {
+    const summPayrolls = await Payroll.findAndCountAll({
+        attributes: [
+            "employeeId",
+            [Sequelize.fn("SUM", Sequelize.col("totalPay")), "totalPay"],
+        ],
+        where: data.employeeId
+            ? {
+                  employeeId: data.employeeId,
+              }
+            : {},
+        group: [
+            "employeeId",
+            "employee.id",
+            "employee.fullName",
+            "payrollPeriod.id",
+            "payrollPeriod.monthPeriod",
+            "payrollPeriod.yearPeriod",
+        ],
+        include: [
+            {
+                model: PayrollPeriod,
+                as: "payrollPeriod",
+                attributes: ["monthPeriod", "yearPeriod"],
+                where:
+                    data.monthPeriod && data.yearPeriod
+                        ? {
+                              monthPeriod: data.monthPeriod,
+                              yearPeriod: data.yearPeriod,
+                          }
+                        : {},
+                required: true,
+            },
+
+            {
+                model: Employee,
+                as: "employee",
+                attributes: ["fullName"],
+            },
+        ],
+    });
+
+    return summPayrolls ? summPayrolls.rows : [];
+};
+
+getAllPayrollPeriod = async () => {
+    const data = await PayrollPeriod.findAll({
+        attributes: ["id", "monthPeriod", "yearPeriod", "startDate", "endDate"],
+        order: [
+            ["yearPeriod", "DESC"],
+            ["monthPeriod", "DESC"],
+        ],
+    });
     return data;
 };
 
-getAllPayslips = async (payslipId, startDate, endDate) => {
-    let condition = { where: {} };
-
-    if (payslipId) {
-        condition.where.payslipId = payslipId;
-    }
-
-    if (startDate && endDate) {
-        Object.assign(condition.where, {
-            [Op.or]: [
-                {
-                    startDate: { [Op.lte]: startDate },
-                    endDate: { [Op.gte]: endDate },
-                },
-                { startDate: { [Op.between]: [startDate, endDate] } },
-                { endDate: { [Op.between]: [startDate, endDate] } },
-            ],
-        });
-    }
-
-    const periods = await Payslip.findAll(condition);
-    return periods;
-};
-
-getAllPayslipsById = async (id) => {
-    const periods = await Payslip.findAll({
-        where: {
-            id,
-        },
-    });
-    return periods;
-};
-
 module.exports = {
-    createPayslip,
-    chekOverlappingDates,
-    getAllPayslips,
     getAllPayslipsById,
+    getAllPayslips,
+    generateSummaryPayslip,
+    getAllPayrollPeriod,
 };

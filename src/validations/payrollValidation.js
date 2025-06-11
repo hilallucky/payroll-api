@@ -2,7 +2,7 @@ const Joi = require("joi").extend(require("@joi/date"));
 const { payrollType, payrollStatus } = require("../constants/contsant");
 const validPayrollStatus = Object.values(payrollStatus);
 
-const createPayrollchemaValidation = Joi.object({
+const createPayrollSchemaValidation = Joi.object({
     startDate: Joi.date()
         .format("YYYY-MM-DD")
         .required()
@@ -14,6 +14,8 @@ const createPayrollchemaValidation = Joi.object({
         .utc()
         .min(Joi.ref("startDate"))
         .required(),
+    monthPeriod: Joi.number().required().label("monthPeriod").min(1).max(12),
+    yearPeriod: Joi.number().required().label("yearPeriod").min(1),
     status: Joi.string()
         .optional()
         .label("status")
@@ -21,5 +23,5 @@ const createPayrollchemaValidation = Joi.object({
 });
 
 module.exports = {
-    createPayrollchemaValidation,
+    createPayrollSchemaValidation,
 };

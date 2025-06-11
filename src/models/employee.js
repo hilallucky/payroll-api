@@ -2,6 +2,7 @@
 
 const { Model } = require("sequelize");
 const sequelize = require("../config/database");
+const { employeeStatus } = require("../constants/contsant");
 
 module.exports = (sequelize, DataTypes) => {
     class Employee extends Model {
@@ -11,15 +12,25 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            Employee.hasMany(models.Attendance, { foreignKey: "employeeId" });
+            Employee.hasMany(models.Attendance, {
+                foreignKey: "employeeId",
+                as: "attendance",
+            });
             Employee.hasMany(models.Attendance, {
                 foreignKey: "userId",
+                as: "attendanceUser",
             });
             Employee.hasMany(models.AttendanceLog, {
                 foreignKey: "employeeId",
+                as: "attendanceLog",
             });
             Employee.hasMany(models.AttendanceLog, {
                 foreignKey: "userId",
+                as: "attendanceLogUser",
+            });
+            Employee.hasMany(models.Payroll, {
+                foreignKey: "employeeId",
+                as: "payroll",
             });
         }
     }
@@ -77,14 +88,21 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 defaultValue: 0,
             },
+            status: {
+                type: DataTypes.STRING,
+                defaultValue: employeeStatus.ACTIVE,
+            },
             isAdmin: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
                 defaultValue: false,
             },
-            createdBy: DataTypes.INTEGER,
-            updatedBy: DataTypes.INTEGER,
+            userId: DataTypes.STRING,
             ipAddress: DataTypes.STRING,
+            createdBy: DataTypes.INTEGER,
+            createdAt: DataTypes.DATE,
+            updatedBy: DataTypes.INTEGER,
+            updatedAt: DataTypes.DATE,
         },
         {
             sequelize,
