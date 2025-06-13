@@ -86,7 +86,6 @@ createAttendance = async (
                         chekEmployeeAttendace.overTimeIn,
                         attDate
                     );
-                    console.log({ overtimeHours: overtimeHours.timeFormat });
 
                     data.overtimeHours = overtimeHours.timeFormat;
                 }
@@ -117,7 +116,6 @@ createAttendance = async (
 
         return newAttendace;
     } catch (error) {
-        console.log(error);
         await transaction.rollback();
         throw error;
     }
@@ -240,13 +238,19 @@ getAllAttendanceByEmployeeId = async (id) => {
         where: {
             employeeId: id,
         },
+        include: [
+            {
+                model: Employee,
+                as: "employee",
+                attributes: ["fullName"],
+            },
+        ],
     });
     return attendance;
 };
 
 module.exports = {
     createAttendance,
-    // chekOverlappingDates,
     getAllAttendance,
     getAllAttendanceByEmployeeId,
 };

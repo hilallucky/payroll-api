@@ -48,7 +48,7 @@ app.use(requestIdMiddleware);
 app.use(performanceLogger);
 app.use(auditInfo);
 
-require("../swagger")(app);
+require("./swagger/swagger")(app);
 
 app.use("/api/v1.0", router);
 

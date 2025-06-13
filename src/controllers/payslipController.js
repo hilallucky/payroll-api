@@ -3,7 +3,7 @@ const payslipService = require("../services/payslipService");
 const { successResponse, errorResponse } = require("../utils/baseResponse");
 
 generatePayslipById = async (req, res) => {
-    const { employeeId, monthPeriod, yearPeriod } = req.query;
+    const { employeeId, month, year } = req.query;
 
     try {
         const payslip = await payslipService.getAllPayslipsById(req.query);
@@ -57,8 +57,6 @@ generateSummaryPayslip = async (req, res) => {
             statusCodes.SUCCESS
         );
     } catch (err) {
-        console.log(err);
-
         return errorResponse(
             res,
             err.message,
@@ -74,7 +72,7 @@ getAllPayrollPeriod = async (req, res) => {
 
         return successResponse(
             res,
-            "List all payroll periods",
+            "Payslip period retrieved successfully",
             payslip,
             statusCodes.SUCCESS
         );

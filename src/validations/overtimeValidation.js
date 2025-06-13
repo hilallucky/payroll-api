@@ -13,7 +13,8 @@ const createOvertimeSchemaValidation = Joi.object({
         .format("YYYY-MM-DD HH:mm:ss")
         .optional()
         .utc()
-        .label("startDate"),
+        .label("startDate")
+        .min(Joi.ref("startDate")),
     description: Joi.string().required().label("description"),
 });
 

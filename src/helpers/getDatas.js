@@ -107,8 +107,22 @@ getActiveEmployees = async (transaction) => {
     return activeEmployees;
 };
 
+getEmployeeById = async (id, transaction) => {
+    const activeEmployees = await Employee.findOne({
+        attributes: ["id", "fullName", "email"],
+        where: {
+            id,
+        },
+        transaction,
+        returning: true,
+    });
+
+    return activeEmployees;
+};
+
 module.exports = {
     countEmployeeAttencances,
     chekOverlappingDates,
     getActiveEmployees,
+    getEmployeeById,
 };

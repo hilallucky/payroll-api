@@ -1,0 +1,320 @@
+components:
+    schemas:
+        OvertimeV1:
+            type: object
+            properties:
+                employeeId:
+                    type: integer
+                    format: int64
+                    example: 1001
+                    description: ID of the employee
+                startDate:
+                    type: string
+                    format: date-time
+                    example: "2025-06-10 17:00:01"
+                    description: Start overtime will be proposed, format YYYY-MM-DD HH:mm:ss
+                endDate:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    example: "2025-06-10 20:00:01"
+                    description: End overtime will be proposed, format YYYY-MM-DD HH:mm:ss. Maximum only 3 hours.
+                description:
+                    type: string
+                    nullable: true
+                    example: "overtime description"
+                    description: Description
+            required:
+                - employeeId
+                - startDate
+        OvertimeV2:
+            type: object
+            properties:
+                employeeId:
+                    type: integer
+                    format: int64
+                    example: 1001
+                    description: ID of the employee
+                startDate:
+                    type: string
+                    format: date-time
+                    example: "2025-06-10 17:00:01"
+                    description: Start overtime will be proposed, format YYYY-MM-DD HH:mm:ss
+                duration:
+                    type: integer
+                    format: int64
+                    nullable: false
+                    maximum: 3
+                    minimum: 1
+                    example: 1
+                    description: Duration overtime will be proposed, format YYYY-MM-DD HH:mm:ss. Maximum only 3 hours.
+                description:
+                    type: string
+                    nullable: true
+                    example: "overtime description"
+                    description: Description
+            required:
+                - employeeId
+                - startDate
+    examples:
+        OvertimeV1:
+            type: object
+            properties:
+                employeeId:
+                    type: integer
+                    format: int64
+                    example: 1001
+                    description: ID of the employee
+                startDate:
+                    type: string
+                    format: date-time
+                    example: "2025-06-10 17:00:01"
+                    description: Start overtime will be proposed, format YYYY-MM-DD HH:mm:ss
+                endDate:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    example: "2025-06-10 20:00:01"
+                    description: End overtime will be proposed, format YYYY-MM-DD HH:mm:ss. Maximum only 3 hours.
+                description:
+                    type: string
+                    nullable: true
+                    example: "overtime description"
+                    description: Description
+            required:
+                - employeeId
+                - startDate
+        OvertimeV2:
+            type: object
+            properties:
+                employeeId:
+                    type: integer
+                    format: int64
+                    example: 1001
+                    description: ID of the employee
+                startDate:
+                    type: string
+                    format: date-time
+                    example: "2025-06-10 17:00:01"
+                    description: Start overtime will be proposed, format YYYY-MM-DD HH:mm:ss
+                duration:
+                    type: integer
+                    format: int64
+                    nullable: false
+                    maximum: 3
+                    minimum: 1
+                    example: 1
+                    description: Duration overtime will be proposed, format YYYY-MM-DD HH:mm:ss. Maximum only 3 hours.
+                description:
+                    type: string
+                    nullable: true
+                    example: "overtime description"
+                    description: Description
+            required:
+                - employeeId
+                - startDate
+    responses:
+        Overtime:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                    example: 1
+                    description: Unique identifier for the attendance record
+                employeeId:
+                    type: integer
+                    format: int64
+                    example: 1001
+                    description: ID of the employee
+                payrollId:
+                    type: integer
+                    format: int64
+                    example: null
+                    description: ID of the payroll
+                date:
+                    type: string
+                    format: date-t
+                    example: "2025-06-12"
+                    description: Overtime submit date
+                startDate:
+                    type: string
+                    format: date-time
+                    example: "2025-11-15T17:00:00Z"
+                    description: Propose start overtime
+                endDate:
+                    type: string
+                    format: date-time
+                    example: "2025-11-15T17:00:00Z"
+                    description: Propose end overtime
+                hours:
+                    type: integer
+                    example: 3
+                    description: Propose duration overtime
+                description:
+                    type: string
+                    example: "Overtime test"
+                    description: Check-out
+                userId:
+                    type: integer
+                    format: int64
+                    example: 1
+                    description: ID of the user
+                ipAddress:
+                    type: string
+                    example: "127.0.0.1"
+                    description: IP address
+                createdAt:
+                    type: string
+                    format: date-time
+                    example: "2023-11-15T09:30:45Z"
+                    description: When the record was created
+                updatedAt:
+                    type: string
+                    format: date-time
+                    example: "2023-11-15T17:05:22Z"
+                    description: When the record was last updated
+            required:
+            example:
+                id: 1
+                employeeId: 1001
+                employee: { fullName: "John Doe" }
+                payrollId: null
+                payslipId: null
+                checkIn: "2023-11-15T08:00:00Z"
+                checkOut: "2023-11-15T17:00:00Z"
+                workHours: "00:00:00"
+                overTimeIn: "2023-11-15T08:00:00Z"
+                overTimeOut: "2023-11-15T17:00:00Z"
+                overtimeHours: "00:00:00"
+                userId: 1
+                ipAddress: "127.0.0.1"
+                createdAt: "2023-11-15T08:01:35Z"
+                updatedAt: "2023-11-15T17:05:22Z"
+        OvertimeLists:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                    example: 1
+                    description: Unique identifier for the attendance record
+                employeeId:
+                    type: integer
+                    format: int64
+                    example: 1001
+                    description: ID of the employee
+                employee:
+                    type: object
+                    properties:
+                        fullName:
+                            type: string
+                            example: "John Doe"
+                            description: Full name of the employee
+                payrollId:
+                    type: integer
+                    format: int64
+                    alowNull: true
+                    example: null
+                    description: ID of the payroll
+                payslipId:
+                    type: integer
+                    format: int64
+                    alowNull: true
+                    example: null
+                    description: ID of the payroll
+                date:
+                    type: string
+                    format: date-t
+                    example: "2025-06-12"
+                    description: Overtime submit date
+                startDate:
+                    type: string
+                    format: date-time
+                    example: "2025-11-15T17:00:00Z"
+                    description: Propose start overtime
+                endDate:
+                    type: string
+                    format: date-time
+                    example: "2025-11-15T17:00:00Z"
+                    description: Propose end overtime
+                hours:
+                    type: integer
+                    example: 3
+                    description: Propose duration overtime
+                description:
+                    type: string
+                    example: "Overtime test"
+                    description: Check-out
+                userId:
+                    type: integer
+                    format: int64
+                    example: 1
+                    description: ID of the user
+                ipAddress:
+                    type: string
+                    example: "127.0.0.1"
+                    description: IP address
+                createdAt:
+                    type: string
+                    format: date-time
+                    example: "2023-11-15T09:30:45Z"
+                    description: When the record was created
+                updatedAt:
+                    type: string
+                    format: date-time
+                    example: "2023-11-15T17:05:22Z"
+                    description: When the record was last updated
+            required:
+            example:
+                id: 1
+                employeeId: 1001
+                employee: { fullName: "John Doe" }
+                payrollId: null
+                payslipId: null
+                checkIn: "2023-11-15T08:00:00Z"
+                checkOut: "2023-11-15T17:00:00Z"
+                workHours: "00:00:00"
+                overTimeIn: "2023-11-15T08:00:00Z"
+                overTimeOut: "2023-11-15T17:00:00Z"
+                overtimeHours: "00:00:00"
+                userId: 1
+                ipAddress: "127.0.0.1"
+                createdAt: "2023-11-15T08:01:35Z"
+                updatedAt: "2023-11-15T17:05:22Z"
+        errorRequestBody:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    example: false
+                message:
+                    type: string
+                    example: "Validation Error"
+                    description: Error title
+                errors:
+                    type: object
+                    properties:
+                        data:
+                            type: array
+                            example:
+                                [
+                                    {
+                                        "object": "employeeId",
+                                        "message": "employeeId must be integer",
+                                    },
+                                ]
+        errorMaxThreeHours:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    example: false
+                message:
+                    type: string
+                    example: "Out of limit hours."
+                    description: Error title
+                errors:
+                    type: string
+                    example: "Overtime limited only 3 hours per day."
+                    description: Error message

@@ -6,7 +6,7 @@ summarizeEmployeeTimes = (data, calculatedTime) => {
 
     // Process each time entry
     data.forEach((entry) => {
-        const [hours, minutes, seconds] = entry[calculatedTime]
+        const [hours, minutes, seconds] = (entry[calculatedTime] || "00:00:00")
             .split(":")
             .map(Number);
         const duration = moment.duration({ hours, minutes, seconds });

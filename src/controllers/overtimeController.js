@@ -75,9 +75,9 @@ calculationDuration = (startAt, endAt) => {
 
     const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
 
-    if (durationMs > THREE_HOURS_MS) {
-        return durationHours.toFixed(2);
-    }
+    // if (durationMs > THREE_HOURS_MS) {
+    return durationHours.toFixed(2);
+    // }
 };
 
 getAllOvertime = async (req, res) => {

@@ -1,7 +1,7 @@
 const { Op, Error } = require("sequelize");
 const moment = require("moment");
 
-const { Payroll, PayrollPeriod, sequelize } = require("../models");
+const { Employee, Payroll, PayrollPeriod, sequelize } = require("../models");
 const { processPayrollData } = require("../helpers/payrollData");
 const { addNewPayrollData } = require("../helpers/addPayrollData");
 const {
@@ -9,11 +9,13 @@ const {
     countEmployeeAttencances,
     chekOverlappingDates,
 } = require("../helpers/getDatas");
-const { updateAttendance } = require("../helpers/updateDatas,js");
-const { updateAttendancePeriod } = require("../helpers/updateDatas,js");
-const { updateAttendanceLog } = require("../helpers/updateDatas,js");
-const { updateOvertime } = require("../helpers/updateDatas,js");
-const { updateReimbursement } = require("../helpers/updateDatas,js");
+const {
+    updateAttendance,
+    updateAttendancePeriod,
+    updateAttendanceLog,
+    updateOvertime,
+    updateReimbursement,
+} = require("../helpers/updateDatas.js");
 
 createPayroll = async (
     monthPeriod,
@@ -74,19 +76,7 @@ createPayroll = async (
         const getOvertimes = await updateOvertime(data, transaction);
         const getReimbursements = await updateReimbursement(data, transaction);
 
-        newPayrollPeriod.totalActiveEmployee = employees.length || 0;
-        newPayrollPeriod.totalWorkEmployee = getAttendances[0];
-        newPayrollPeriod.totalWorkHour =
-            getAttendances.summWorkHours.grandTotal;
-        newPayrollPeriod.totalOvertimeEmployee = getOvertimes[0];
-        newPayrollPeriod.totalOvertime =
-            getAttendances.summOverTimes.grandTotal;
-        newPayrollPeriod.totalReimbursementEmployee =
-            getReimbursements.getReimbursements[0];
-        newPayrollPeriod.totalReimbursement = getReimbursements.grandTotal || 0;
-        await newPayrollPeriod.save({ transaction });
-
-        const converPayrolData = await countEmployeeAttencances(
+        const convertPayrolData = await countEmployeeAttencances(
             data,
             getAttendances.getAttendaces[1],
             getOvertimes[1],
@@ -94,9 +84,9 @@ createPayroll = async (
             transaction
         );
 
-        const processDataPayroll = processPayrollData(converPayrolData);
-        const createPayroll = await addNewPayrollData(
-            processDataPayroll,
+        const processDataPayroll = processPayrollData(convertPayrolData);
+        const newPayroll = await addNewPayrollData(
+            processDataPayroll.data,
             {
                 userId,
                 payrollPeriodId: newPayrollPeriod.id,
@@ -107,10 +97,29 @@ createPayroll = async (
             transaction
         );
 
+        newPayrollPeriod.totalActiveEmployee = employees.length || 0;
+        newPayrollPeriod.totalWorkEmployee =
+            processDataPayroll.totalWorkEmployee || 0;
+        newPayrollPeriod.totalWorkHour =
+            getAttendances.summWorkHours.grandTotal || "00:00:00";
+        newPayrollPeriod.totalOvertimeEmployee =
+            getOvertimes.totalOvertimeEmployee;
+        newPayrollPeriod.totalOvertimeHour =
+            getAttendances.summOverTimes.grandTotal || "00:00:00";
+        newPayrollPeriod.totalReimbursementEmployee =
+            getReimbursements.employeeTotals.length;
+        newPayrollPeriod.totalReimbursement = getReimbursements.grandTotal || 0;
+        newPayrollPeriod.totalOvertime =
+            processDataPayroll.grandTotalOvertimePay || 0;
+        newPayrollPeriod.totalSalaryProrate =
+            processDataPayroll.grandTotalSalaryProrate || 0;
+        newPayrollPeriod.totalSalary = processDataPayroll.grandTotalSalary || 0;
+        await newPayrollPeriod.save({ transaction });
+
         await transaction.commit();
 
         return {
-            newPayrollPeriod,
+            ...JSON.parse(JSON.stringify(newPayrollPeriod)),
             attendances: getAttendances[0],
             attendanceLogs: getAttendanceLogs[0],
             atendancePeriods: getAttendancePeriods[0],
@@ -118,8 +127,6 @@ createPayroll = async (
             reimbursements: getReimbursements[0],
         };
     } catch (err) {
-        console.log(err);
-
         if (transaction) {
             await transaction.rollback();
         }
@@ -137,7 +144,21 @@ createPayroll = async (
 };
 
 getAllPayrolls = async (payrollId, startDate, endDate) => {
-    let condition = { where: {} };
+    let condition = {
+        where: {},
+        include: [
+            {
+                model: PayrollPeriod,
+                as: "payrollPeriod",
+                attributes: ["monthPeriod", "yearPeriod"],
+            },
+            {
+                model: Employee,
+                as: "employee",
+                attributes: ["fullName"],
+            },
+        ],
+    };
 
     if (payrollId) {
         condition.where.payrollId = payrollId;
@@ -163,15 +184,44 @@ getAllPayrolls = async (payrollId, startDate, endDate) => {
 getAllPayrollsById = async (id) => {
     const periods = await Payroll.findAll({
         where: {
-            id,
+            payrollPeriodId: id,
         },
+        include: [
+            {
+                model: PayrollPeriod,
+                as: "payrollPeriod",
+                attributes: ["monthPeriod", "yearPeriod"],
+            },
+            {
+                model: Employee,
+                as: "employee",
+                attributes: ["fullName"],
+            },
+        ],
+    });
+    return periods;
+};
+
+getAllPayrollsByPeriod = async (monthPeriod, yearPeriod) => {
+    const periods = await Payroll.findAll({
+        include: [
+            {
+                model: PayrollPeriod,
+                as: "payrollPeriod",
+                attributes: ["monthPeriod", "yearPeriod"],
+                where: {
+                    monthPeriod,
+                    yearPeriod,
+                },
+            },
+        ],
     });
     return periods;
 };
 
 module.exports = {
     createPayroll,
-    // chekOverlappingDates,
     getAllPayrolls,
     getAllPayrollsById,
+    getAllPayrollsByPeriod,
 };

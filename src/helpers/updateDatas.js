@@ -55,16 +55,18 @@ updateAttendance = async (data, transaction) => {
             "overtimeHours"
         );
 
-        // console.log({
-        //     plainOvertimes: plainOvertimes,
-        //     summOverTimes: summOverTimes.grandTotal,
-        //     subTotalOvertimes: JSON.stringify(summOverTimes.employeeTotals),
-        // });
-
-        return { getAttendaces, summWorkHours, summOverTimes };
+        return {
+            getAttendaces,
+            summWorkHours,
+            summOverTimes,
+        };
     }
 
-    return { getAttendaces };
+    return {
+        getAttendaces,
+        summWorkHours: 0,
+        summOverTimes: 0,
+    };
 };
 
 updateAttendanceLog = async (data, transaction) => {
@@ -140,6 +142,9 @@ updateAttendancePeriod = async (data, transaction) => {
 };
 
 updateOvertime = async (data, transaction) => {
+    let prevEmpId = null,
+        totalOvertimeEmployee = 0;
+
     const getOvertimes = await Overtime.update(
         {
             payrollId: data.newPayrollPeriod,
@@ -185,7 +190,16 @@ updateOvertime = async (data, transaction) => {
         }
     );
 
-    return getOvertimes;
+    if (getOvertimes[1].length > 0) {
+        getOvertimes[1].forEach((emp) => {
+            if (prevEmpId !== emp.employeeId) {
+                totalOvertimeEmployee++;
+                prevEmpId = emp.employeeId;
+            }
+        });
+    }
+
+    return { ...getOvertimes, totalOvertimeEmployee: totalOvertimeEmployee };
 };
 
 updateReimbursement = async (data, transaction) => {
@@ -241,9 +255,6 @@ updateReimbursement = async (data, transaction) => {
             totalAmount: total,
         })
     );
-
-    // console.log("Grand Total:", summary.grandTotal);
-    // console.log("Employee Totals:", employeeTotals);
 
     return {
         getReimbursements,

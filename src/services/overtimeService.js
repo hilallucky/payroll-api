@@ -54,7 +54,15 @@ chekEmployeeWorkHour = async (employeeId) => {
 };
 
 getAllOvertime = async (req, res) => {
-    const overtimes = await Overtime.findAll();
+    const overtimes = await Overtime.findAll({
+        include: [
+            {
+                model: Employee,
+                as: "employee",
+                attributes: ["fullName"],
+            },
+        ],
+    });
     return overtimes;
 };
 
@@ -63,6 +71,13 @@ getAllOvertimeByEmployeeId = async (id) => {
         where: {
             employeeId: id,
         },
+        include: [
+            {
+                model: Employee,
+                as: "employee",
+                attributes: ["fullName"],
+            },
+        ],
     });
     return overtimes;
 };

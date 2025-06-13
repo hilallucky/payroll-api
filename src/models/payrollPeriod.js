@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "payrollPeriodId",
                 as: "payroll",
             });
+            PayrollPeriod.hasMany(models.Reimbursement, {
+                foreignKey: "payrollId",
+                as: "reimbursement",
+            });
         }
     }
     PayrollPeriod.init(
@@ -26,13 +30,25 @@ module.exports = (sequelize, DataTypes) => {
             totalWorkEmployee: { type: DataTypes.INTEGER, defaultValue: 0 },
             totalWorkHour: { type: DataTypes.STRING, defaultValue: "00:00:00" },
             totalOvertimeEmployee: { type: DataTypes.INTEGER, defaultValue: 0 },
-            totalOvertime: {
+            totalOvertimeHour: {
                 type: DataTypes.STRING,
                 defaultValue: "00:00:00",
             },
-            totalReimbursement: { type: DataTypes.INTEGER, defaultValue: 0 },
+            totalOvertime: {
+                type: DataTypes.DECIMAL,
+                defaultValue: 0,
+            },
+            totalReimbursement: { type: DataTypes.DECIMAL, defaultValue: 0 },
             totalReimbursementEmployee: {
                 type: DataTypes.INTEGER,
+                defaultValue: 0,
+            },
+            totalSalaryProrate: {
+                type: DataTypes.DECIMAL,
+                defaultValue: 0,
+            },
+            totalSalary: {
+                type: DataTypes.DECIMAL,
                 defaultValue: 0,
             },
             status: {

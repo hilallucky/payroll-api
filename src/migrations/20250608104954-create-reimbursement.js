@@ -40,9 +40,6 @@ module.exports = {
             ipAddress: {
                 type: Sequelize.TEXT,
             },
-            craetedAt: {
-                type: Sequelize.DATE,
-            },
             updatedAt: {
                 type: Sequelize.DATE,
             },

@@ -5,6 +5,9 @@ require("dotenv").config();
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 
+// Import all tag definitions
+require("./tags/allTags");
+
 const options = {
     definition: {
         openapi: "3.0.0",
@@ -42,7 +45,13 @@ const options = {
         ],
     },
     // Paths to files containing OpenAPI definitions
-    apis: ["./src/routes/**/*.js", "./src/controllers/*.js"],
+    apis: [
+        "./src/routes/**/*.js",
+        "./src/swagger/schemas/*.yml",
+        "./src/swagger/tags/*.js",
+        // path.join(__dirname, "./src/swagger/schemas/*.yml"),
+        "./src/controllers/*.js",
+    ],
 };
 
 const specs = swaggerJsdoc(options);

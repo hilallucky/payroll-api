@@ -36,9 +36,6 @@ module.exports = {
             userId: {
                 type: Sequelize.STRING,
             },
-            craetedAt: {
-                type: Sequelize.DATE,
-            },
             updatedAt: {
                 type: Sequelize.DATE,
             },

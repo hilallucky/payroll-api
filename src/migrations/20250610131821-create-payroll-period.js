@@ -40,15 +40,26 @@ module.exports = {
                 type: Sequelize.INTEGER,
                 defaultValue: 0,
             },
-            totalOvertime: {
+            totalOvertimeHour: {
                 type: Sequelize.STRING,
                 defaultValue: "00:00:00",
             },
+            totalOvertime: {
+                type: Sequelize.DECIMAL,
+                defaultValue: 0,
+            },
             totalReimbursement: {
-                type: Sequelize.INTEGER,
+                type: Sequelize.DECIMAL,
             },
             totalReimbursementEmployee: {
                 type: Sequelize.INTEGER,
+                defaultValue: 0,
+            },
+            totalSalaryProrate: {
+                type: Sequelize.DECIMAL,
+            },
+            totalSalary: {
+                type: Sequelize.DECIMAL,
                 defaultValue: 0,
             },
             status: {

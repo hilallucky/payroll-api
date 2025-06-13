@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const { statusCodes } = require("../constants/contsant");
 const payrollService = require("../services/payrollPeriodService");
 // const payrollService = require("../services/payrollService");
@@ -54,10 +55,27 @@ getAllPayrolls = async (req, res) => {
 };
 
 getAllPayrollsById = async (req, res) => {
-    const { id } = req.params;
+    const { payrollPeriodId } = req.params;
 
     try {
-        const payrolls = await payrollService.getAllPayrollsById(id);
+        const payrolls = await payrollService.getAllPayrollsById(
+            payrollPeriodId
+        );
+
+        return successResponse(res, "Payroll retrieved successfully", payrolls);
+    } catch (err) {
+        return errorResponse(res, "Failed to retrieve payroll", err.message);
+    }
+};
+
+getAllPayrollsByPeriod = async (req, res) => {
+    const { month, year } = req.params;
+
+    try {
+        const payrolls = await payrollService.getAllPayrollsByPeriod(
+            month,
+            year
+        );
 
         return successResponse(res, "Payroll retrieved successfully", payrolls);
     } catch (err) {
@@ -69,4 +87,5 @@ module.exports = {
     createPayroll,
     getAllPayrolls,
     getAllPayrollsById,
+    getAllPayrollsByPeriod,
 };

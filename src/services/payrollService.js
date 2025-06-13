@@ -9,11 +9,8 @@ const {
     Reimbursement,
     sequelize,
 } = require("../models");
-const { statusCodes } = require("../constants/contsant");
-const { getAllAttendance } = require("./attendanceService");
 
 createPayroll = async (startDate, endDate, userId, ipAddress, req, res) => {
-    console.log("mulai createPayroll");
     const transaction = await sequelize.transaction();
     try {
         const overlapping = await chekOverlappingDates(
@@ -22,13 +19,11 @@ createPayroll = async (startDate, endDate, userId, ipAddress, req, res) => {
             endDate,
             transaction
         );
-        console.log({ overlapping });
 
         const dataOverlap = JSON.parse(JSON.stringify(overlapping));
         if (dataOverlap.length > 0) {
             throw new Error("Overlapping periods found");
         }
-        // const newPayroll = "";
         const newPayroll = await Payroll.create(
             {
                 createdBy: userId,
@@ -40,35 +35,6 @@ createPayroll = async (startDate, endDate, userId, ipAddress, req, res) => {
             { transaction, returning: ["id"] }
         );
 
-        // const getAttendaces = await Attendance.update(
-        //     {
-        //         payrollId: newPayroll.id,
-        //         updatedBy: userId,
-        //         updatedAt: new Date(),
-        //         ipAddress,
-        //     },
-        //     {
-        //         where: {
-        //             [Op.and]: [
-        //                 Sequelize.where(
-        //                     Sequelize.fn("DATE", Sequelize.col("checkIn")),
-        //                     {
-        //                         [Op.between]: [
-        //                             new Date(startDate)
-        //                                 .toISOString()
-        //                                 .slice(0, 10),
-        //                             new Date(endDate)
-        //                                 .toISOString()
-        //                                 .slice(0, 10),
-        //                         ],
-        //                     }
-        //                 ),
-        //                 { payrollId: null },
-        //             ],
-        //         },
-        //     },
-        //     { transaction, returning: true }
-        // );
         const data = {
             newPayrollId: newPayroll.id,
             userId: userId,
@@ -80,149 +46,15 @@ createPayroll = async (startDate, endDate, userId, ipAddress, req, res) => {
 
         const getAttendaces = await updateAttendance(data, transaction);
 
-        // const getAttendaceLogs = await AttendanceLog.update(
-        //     {
-        //         payrollId: newPayroll.id,
-        //         updatedBy: userId,
-        //         updatedAt: new Date(),
-        //         ipAddress,
-        //     },
-        //     {
-        //         where: {
-        //             [Op.and]: [
-        //                 Sequelize.where(
-        //                     Sequelize.fn(
-        //                         "DATE",
-        //                         Sequelize.col("attendanceDate")
-        //                     ),
-        //                     {
-        //                         [Op.between]: [
-        //                             new Date(startDate)
-        //                                 .toISOString()
-        //                                 .slice(0, 10),
-        //                             new Date(endDate)
-        //                                 .toISOString()
-        //                                 .slice(0, 10),
-        //                         ],
-        //                     }
-        //                 ),
-        //                 { payrollId: null },
-        //             ],
-        //         },
-        //     },
-        //     { transaction, returning: true }
-        // );
         const getAttendaceLogs = await updateAttendanceLog(data, transaction);
 
-        // const getAttendacePeriods = await AttendancePeriod.update(
-        //     {
-        //         payrollId: newPayroll.id,
-        //         updatedBy: userId,
-        //         updatedAt: new Date(),
-        //         userId,
-        //         ipAddress,
-        //     },
-        //     {
-        //         where: {
-        //             [Op.and]: [
-        //                 Sequelize.where(
-        //                     Sequelize.fn("DATE", Sequelize.col("startDate")),
-        //                     {
-        //                         [Op.between]: [
-        //                             new Date(startDate)
-        //                                 .toISOString()
-        //                                 .slice(0, 10),
-        //                             new Date(endDate)
-        //                                 .toISOString()
-        //                                 .slice(0, 10),
-        //                         ],
-        //                     }
-        //                 ),
-        //                 { payrollId: null },
-        //             ],
-        //         },
-        //     },
-        //     { transaction, returning: true }
-        // );
         const getAttendacePeriods = await updateAttendancePeriod(
             data,
             transaction
         );
 
-        // const getOvertimes = await Overtime.update(
-        //     {
-        //         payrollId: newPayroll.id,
-        //         updatedAt: new Date(),
-        //         updatedBy: userId,
-        //         ipAddress,
-        //         userId,
-        //     },
-        //     {
-        //         where: {
-        //             [Op.or]: [
-        //                 Sequelize.where(
-        //                     Sequelize.fn("DATE", Sequelize.col("startDate")),
-        //                     {
-        //                         [Op.between]: [
-        //                             new Date(startDate)
-        //                                 .toISOString()
-        //                                 .slice(0, 10),
-        //                             new Date(endDate)
-        //                                 .toISOString()
-        //                                 .slice(0, 10),
-        //                         ],
-        //                     }
-        //                 ),
-        //                 Sequelize.where(
-        //                     Sequelize.fn("DATE", Sequelize.col("endDate")),
-        //                     {
-        //                         [Op.between]: [
-        //                             new Date(startDate)
-        //                                 .toISOString()
-        //                                 .slice(0, 10),
-        //                             new Date(endDate)
-        //                                 .toISOString()
-        //                                 .slice(0, 10),
-        //                         ],
-        //                     }
-        //                 ),
-        //                 { payrollId: null },
-        //             ],
-        //         },
-        //     },
-        //     { transaction, returning: true }
-        // );
         const getOvertimes = await updateOvertime(data, transaction);
 
-        // const getReimbursements = await Reimbursement.update(
-        //     {
-        //         payrollId: newPayroll.id,
-        //         updatedBy: userId,
-        //         updatedAt: new Date(),
-        //         userId,
-        //     },
-        //     {
-        //         where: {
-        //             [Op.and]: [
-        //                 Sequelize.where(
-        //                     Sequelize.fn("DATE", Sequelize.col("date")),
-        //                     {
-        //                         [Op.between]: [
-        //                             new Date(startDate)
-        //                                 .toISOString()
-        //                                 .slice(0, 10),
-        //                             new Date(endDate)
-        //                                 .toISOString()
-        //                                 .slice(0, 10),
-        //                         ],
-        //                     }
-        //                 ),
-        //                 { payrollId: null },
-        //             ],
-        //         },
-        //     },
-        //     { transaction, returning: true }
-        // );
         const getReimbursements = await updateReimbursement(data, transaction);
 
         await transaction.commit();
@@ -235,8 +67,6 @@ createPayroll = async (startDate, endDate, userId, ipAddress, req, res) => {
             reimbursements: getReimbursements[0],
         };
     } catch (err) {
-        console.log(err);
-
         if (transaction) {
             await transaction.rollback();
         }

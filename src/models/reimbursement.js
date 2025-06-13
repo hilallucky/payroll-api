@@ -12,6 +12,11 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             Reimbursement.belongsTo(models.Employee, {
                 foreignKey: "employeeId",
+                as: "employee",
+            });
+            Reimbursement.belongsTo(models.PayrollPeriod, {
+                foreignKey: "payrollId",
+                as: "payrollPeriod",
             });
         }
     }
@@ -66,7 +71,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             userId: DataTypes.INTEGER,
             ipAddress: DataTypes.TEXT,
-            craetedAt: DataTypes.DATE,
+            createdAt: DataTypes.DATE,
             updatedAt: DataTypes.DATE,
             createdBy: DataTypes.INTEGER,
             updatedBy: DataTypes.INTEGER,

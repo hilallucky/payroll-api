@@ -1,0 +1,235 @@
+components:
+    responses:
+        PayslipPeriods:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                    example: 1001
+                    description: ID of the payslip period
+                monthPeriod:
+                    type: integer
+                    format: int64
+                    example: 1
+                    description: Payroll month period
+                yearPeriod:
+                    type: integer
+                    format: int64
+                    example: 2025
+                    description: Payroll year period
+                startDate:
+                    type: string
+                    format: date
+                    example: "2025-06-01"
+                    description: Payslip submit date
+                endDate:
+                    type: string
+                    format: date
+                    example: "2025-06-30"
+                    description: Payslip submit date
+        Payslip:
+            type: object
+            properties:
+                employeeId:
+                    type: integer
+                    format: int64
+                    example: 1001
+                    description: ID of the employee
+                employee:
+                    type: object
+                    properties:
+                        fullName:
+                            type: string
+                            example: "John Doe"
+                            description: Full name of the employee
+                        email:
+                            type: string
+                            example: "admin@payroll.com"
+                            description: Email of the employee
+                        status:
+                            type: string
+                            example: "John Doe"
+                            description: Status of the employee
+                payrollPeriodId:
+                    type: integer
+                    format: int64
+                    example: 1
+                    description: ID of the payroll period
+                payrollPeriod:
+                    type: object
+                    properties:
+                        monthPeriod:
+                            type: integer
+                            format: int64
+                            example: 1
+                            description: Payroll month period
+                        yearPeriod:
+                            type: integer
+                            format: int64
+                            example: 2025
+                            description: Payroll year period
+                        reimbursement:
+                            type: array
+                            items:
+                                type: object
+                                properties:
+                                    id:
+                                        type: integer
+                                        format: int64
+                                        example: 1
+                                        description: ID of the reimbursement
+                                    date:
+                                        type: string
+                                        format: date
+                                        example: "2025-06-01"
+                                        description: Date of the reimbursement
+                                    amount:
+                                        type: integer
+                                        format: int64
+                                        example: 1000
+                                        description: Amount of the reimbursement
+                startDate:
+                    type: string
+                    format: date
+                    example: "2025-06-01"
+                    description: Payslip submit date
+                endDate:
+                    type: string
+                    format: date
+                    example: "2025-06-30"
+                    description: Payslip submit date
+                baseSalary:
+                    type: integer
+                    format: int64
+                    example: 2000
+                    description: Base salary per hour
+                workingDays:
+                    type: integer
+                    format: int64
+                    example: 30
+                    description: Working days
+                workingHours:
+                    type: string
+                    example: "15:15:00"
+                    description: Working hours
+                overtimeHours:
+                    type: string
+                    example: "15:15:00"
+                    description: overtimeHours hours
+                proratedSalary:
+                    type: integer
+                    format: int64
+                    example: "1525.00"
+                    description: Prorated salary
+                overtimePay:
+                    type: integer
+                    format: int64
+                    example: "2216.67"
+                    description: Overtime pay
+                totalReimbursements:
+                    type: integer
+                    format: int64
+                    example: "4000"
+                    description: Prorated salary
+                totalPay:
+                    type: integer
+                    format: int64
+                    example: "7741.67"
+                    description: Prorated salary
+                status:
+                    type: string
+                    example: "PENDING"
+                    description: Description
+                userId:
+                    type: integer
+                    format: int64
+                    example: 1
+                    description: ID of the user
+                ipAddress:
+                    type: string
+                    example: "127.0.0.1"
+                    description: IP address
+                createdAt:
+                    type: string
+                    format: date-time
+                    example: "2023-11-15T09:30:45Z"
+                    description: When the record was created
+                updatedAt:
+                    type: string
+                    format: date-time
+                    example: "2023-11-15T17:05:22Z"
+                    description: When the record was last updated
+        PayslipSummary:
+            type: object
+            properties:
+                totalEmployees:
+                    type: integer
+                    format: int64
+                    example: 10
+                    description: Total employees
+                totalPayslips:
+                    type: integer
+                    format: int64
+                    example: 20
+                    description: Total payslips
+                totalSalary:
+                    type: integer
+                    format: int64
+                    example: 10000
+                    description: Total salary
+                employees:
+                    type: array
+                    items:
+                        employeeId:
+                            type: integer
+                            format: int64
+                            example: 1001
+                            description: ID of the employee
+                        totalPay:
+                            type: integer
+                            format: int64
+                            example: "7741.67"
+                            description: Prorated salary
+                        payrollPeriod:
+                            type: object
+                            properties:
+                                monthPeriod:
+                                    type: integer
+                                    format: int64
+                                    example: 1
+                                    description: Payroll month period
+                                yearPeriod:
+                                    type: integer
+                                    format: int64
+                                    example: 2025
+                                    description: Payroll year period
+                        employee:
+                            type: object
+                            properties:
+                                fullName:
+                                    type: string
+                                    example: "John Doe"
+                                    description: Full name of the employee
+        errorRequestBody:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                    example: false
+                message:
+                    type: string
+                    example: "Validation Error"
+                    description: Error title
+                errors:
+                    type: object
+                    properties:
+                        data:
+                            type: array
+                            example:
+                                [
+                                    {
+                                        "object": "employeeId",
+                                        "message": "employeeId must be integer",
+                                    },
+                                ]

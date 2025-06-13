@@ -9,10 +9,9 @@ const { successResponse, errorResponse } = require("../../utils/baseResponse");
  * @swagger
  * /public/login:
  *   post:
- *     summary: Admin login
- *     description: Authenticate admin user and return JWT token.
- *     tags:
- *       - Auth
+ *     summary: User authentication, run this endpoint at the FIRST STEP
+ *     description: Authenticate admin user and return JWT token, and used for authorization for other endpoints and put it in header.
+ *     tags: [Authentication]
  *     security: []  # <-- This disables bearer token for this route
  *     requestBody:
  *       required: true
@@ -26,10 +25,10 @@ const { successResponse, errorResponse } = require("../../utils/baseResponse");
  *             properties:
  *               username:
  *                 type: string
- *                 example: admin123
+ *                 example: admin
  *               password:
  *                 type: string
- *                 example: secretpassword
+ *                 example: admin123
  *     responses:
  *       200:
  *         description: Successful login
@@ -38,23 +37,58 @@ const { successResponse, errorResponse } = require("../../utils/baseResponse");
  *             schema:
  *               type: object
  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
  *                 message:
  *                   type: string
+ *                   example: You are logged in now
  *                 data:
  *                   type: object
  *                   properties:
  *                     userName:
  *                       type: string
+ *                       example: admin
  *                     fullName:
  *                       type: string
+ *                       example: Admin
  *                     email:
  *                       type: string
+ *                       example: 8Ft6o@example.com
  *                     token:
  *                       type: string
  *       401:
  *         description: Invalid password/username or access denied
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Invalid password/username or access denied
+ *                 data:
+ *                   type: null
+ *                   example: null
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Server error
+ *                 data:
+ *                   type: null
+ *                   example: null
  */
 
 router.post("/login", async (req, res) => {

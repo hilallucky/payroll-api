@@ -28,10 +28,20 @@ createReimbursement = async (req, res) => {
     } catch (err) {
         return errorResponse(
             res,
-            "Server Error",
-            err.message,
-            statusCodes.SERVER_ISSUE
+            err.message == "Employee not found" ? err.message : "Server Error",
+            err.message == "Employee not found"
+                ? "Employee not founded"
+                : err.message,
+            err.message == "Employee not found"
+                ? statusCodes.BAD_REQUEST
+                : statusCodes.BAD_REQUEST
         );
+        // return errorResponse(
+        //     res,
+        //     "Server Error",
+        //     err.message,
+        //     statusCodes.SERVER_ISSUE
+        // );
     }
 };
 

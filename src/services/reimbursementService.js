@@ -1,6 +1,7 @@
 const moment = require("moment");
 const { Op, Sequelize } = require("sequelize");
 const { Reimbursement, Employee } = require("../models");
+const { getEmployeeById } = require("../helpers/getDatas");
 
 createReimbursement = async (
     employeeId,
@@ -13,6 +14,12 @@ createReimbursement = async (
     ipAddress
 ) => {
     let payrollIdVal = payrollId ? payrollId : null;
+
+    const chekEmployeeData = await getEmployeeById(employeeId);
+
+    if (!chekEmployeeData) {
+        throw new Error("Employee not found");
+    }
 
     const newReimbursement = await Reimbursement.create({
         employeeId,
@@ -31,7 +38,15 @@ createReimbursement = async (
 };
 
 getAllReimbursement = async (req, res) => {
-    const reimbursements = await Reimbursement.findAll();
+    const reimbursements = await Reimbursement.findAll({
+        include: [
+            {
+                model: Employee,
+                as: "employee",
+                attributes: ["fullName"],
+            },
+        ],
+    });
     return reimbursements;
 };
 
@@ -40,6 +55,13 @@ getAllReimbursementByEmployeeId = async (id) => {
         where: {
             employeeId: id,
         },
+        include: [
+            {
+                model: Employee,
+                as: "employee",
+                attributes: ["fullName"],
+            },
+        ],
     });
     return reimbursements;
 };

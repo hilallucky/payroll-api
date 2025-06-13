@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             Overtime.belongsTo(models.Employee, {
                 foreignKey: "employeeId",
+                as: "employee",
             });
             // Overtime.belongsTo(models.Payroll, {
             //     foreignKey: "payrollId",
@@ -74,7 +75,7 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: true,
             },
             userId: DataTypes.INTEGER,
-            craetedAt: DataTypes.DATE,
+            createdAt: DataTypes.DATE,
             updatedAt: DataTypes.DATE,
             createdBy: DataTypes.INTEGER,
             updatedBy: DataTypes.INTEGER,

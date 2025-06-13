@@ -3,6 +3,12 @@ const { timeToHourstoMinutes } = require("../utils/convertData");
 processPayrollData = (data) => {
     // Create a map of employee data
     const employeeMap = new Map();
+    let grandTotalSalaryProrate = 0,
+        grandTotalSalary = 0,
+        grandTotalOvertimePay = 0,
+        grandTotalReimbursements = 0,
+        totalWorkEmployee = 0,
+        prevEmpId = null;
 
     // Process countAttendances to get basic employee info
     data.countAttendances.count.forEach((emp) => {
@@ -96,10 +102,27 @@ processPayrollData = (data) => {
         const overtimeRate = emp.salaryPerHour * 2;
         emp.overTimeSalary = (overtimeHours * overtimeRate).toFixed(2);
         // }
+
+        if (prevEmpId !== emp.employeeId) {
+            totalWorkEmployee++;
+            prevEmpId = emp.employeeId;
+        }
+
+        grandTotalSalary += parseFloat(emp.salaryProrate) || 0;
+        grandTotalOvertimePay += parseFloat(emp.overTimeSalary) || 0;
+        grandTotalReimbursements += parseFloat(emp.totalReimbursements) || 0;
+        grandTotalSalaryProrate += parseFloat(emp.salaryProrate) || 0;
     });
 
     // Convert map to array
-    return Array.from(employeeMap.values());
+    return {
+        data: Array.from(employeeMap.values()),
+        totalWorkEmployee,
+        grandTotalSalaryProrate: grandTotalSalaryProrate.toFixed(2),
+        grandTotalSalary: grandTotalSalary.toFixed(2),
+        grandTotalOvertimePay: grandTotalOvertimePay.toFixed(2),
+        grandTotalReimbursements: grandTotalReimbursements.toFixed(2),
+    };
 };
 
 module.exports = { processPayrollData };

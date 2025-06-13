@@ -1,6 +1,12 @@
 const { Op, Sequelize, Error, where } = require("sequelize");
 
-const { Employee, PayrollPeriod, Payroll, sequelize } = require("../models");
+const {
+    Employee,
+    PayrollPeriod,
+    Payroll,
+    Reimbursement,
+    sequelize,
+} = require("../models");
 const { statusCodes } = require("../constants/contsant");
 
 getAllPayslipsById = async (data) => {
@@ -8,6 +14,7 @@ getAllPayslipsById = async (data) => {
         const result = await Payroll.findAll({
             attributes: [
                 "employeeId",
+                "payrollPeriodId",
                 "startDate",
                 "endDate",
                 "baseSalary",
@@ -28,12 +35,22 @@ getAllPayslipsById = async (data) => {
                     as: "payrollPeriod",
                     attributes: ["monthPeriod", "yearPeriod"],
                     where:
-                        data.monthPeriod && data.yearPeriod
+                        data.month && data.year
                             ? {
-                                  monthPeriod: data.monthPeriod,
-                                  yearPeriod: data.yearPeriod,
+                                  monthPeriod: data.month,
+                                  yearPeriod: data.year,
                               }
                             : {},
+                    include: [
+                        {
+                            model: Reimbursement,
+                            as: "reimbursement",
+                            attributes: ["id", "date", "amount"],
+                            where: {
+                                employeeId: data.employeeId,
+                            },
+                        },
+                    ],
                     required: true,
                 },
 
@@ -108,10 +125,10 @@ generateSummaryPayslip = async (data) => {
                 as: "payrollPeriod",
                 attributes: ["monthPeriod", "yearPeriod"],
                 where:
-                    data.monthPeriod && data.yearPeriod
+                    data.month && data.year
                         ? {
-                              monthPeriod: data.monthPeriod,
-                              yearPeriod: data.yearPeriod,
+                              monthPeriod: data.month,
+                              yearPeriod: data.year,
                           }
                         : {},
                 required: true,
